@@ -1,46 +1,147 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# React App with Typescript exercise
 
-## Available Scripts
+Develop the web frontend to get Users from Github.
 
-In the project directory, you can run:
 
-### `yarn start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Get users from Github with rest api
+- Render user list
+- View detail when click on any item
+- Store in indexedDB
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+ 
+## Create React project with Typescript template
 
-### `yarn test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Create React App
+```bash
+npx create-react-app react-typescript-exercise --template typescript
+```
+Run project
+```bash
+cd react-typescript-exercise
+npm start
+```
 
-### `yarn build`
+Install Material UI Core
+```bash
+// with npm
+npm install @material-ui/core
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+// with yarn
+yarn add @material-ui/core
+```
+Install Material Icon
+```bash
+// with npm
+npm install @material-ui/icons
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+// with yarn
+yarn add @material-ui/icons
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Install IndexedDB
+```bash
+npm install idb
+```
 
-### `yarn eject`
+Install Axios
+```bash
+npm install axios
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Generate api key or token
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Go to Github website and Sign in with your account
+- Click on profile icon, then **Settings/Developer Settings/Personal access tokens/Generate new token**
+- Put the name, and select to **Scopes**, then click Generate
+- Copy the token for you project
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/task-force-45e4e.appspot.com/o/Screen%20Shot%202021-07-20%20at%2012.04.03%20AM.png?alt=media&token=9aa7eff4-1846-4bb2-a20a-c4cd5b20efa9)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Configure **HTTP Request**
+Create **Axios** configuration `/service/apiClient.ts`
+```javascript
+import axios, { AxiosInstance } from "axios";
+import config from "../utils/config";
+const apiClient: AxiosInstance = axios.create({
+  baseURL: config.url,
+  headers: {
+    "Content-type": "application/json",
+    "Authorization":"token "+config.token
+  },
+});
 
-## Learn More
+export default apiClient;
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Create **Api** configuration `/service/Apis.ts`
+```javascript
+import http from "./apiClient";
+class Apis {
+  getAll(): Promise<any> {
+    return http.get("/users?per_page=20");
+  }
+  get(uri: string): Promise<any> {
+    return http.get(uri);
+  }
+}
+export default new Apis();
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Configure IndexedDB
+
+Create **Mothods** to do operation with DB `/service/indexedDB.ts`
+```javascript
+import { openDB } from 'idb';
+const dbPromise = openDB('user-store', 1, {
+  upgrade(db) {
+    db.createObjectStore('users');
+  },
+});
+class indexedDB {
+    async get(key: string): Promise<any> {
+        return (await dbPromise).get('users', key);
+    }
+    async set(key: string,val: any): Promise<any> {
+        return (await dbPromise).put('users', val, key);
+    }
+    async delete(key: string): Promise<any> {
+        return (await dbPromise).get('users', key);
+    }
+    async clear(key: string): Promise<any> {
+        return (await dbPromise).get('users', key);
+    }
+  }
+  export default new indexedDB();
+```
+
+## Screenshots
+
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/task-force-45e4e.appspot.com/o/screens%2FScreen%20Shot%202021-07-28%20at%2010.24.10%20AM.png?alt=media&token=e6298b46-0a9a-4039-b0d4-b8d3ce26dfac)
+
+
+
+
+![App Screenshot](https://firebasestorage.googleapis.com/v0/b/task-force-45e4e.appspot.com/o/screens%2FScreen%20Shot%202021-07-28%20at%2010.24.22%20AM.png?alt=media&token=5f84e7b7-5031-4a48-83f5-2073ec7e05b2)
+
+  ## Run the existing project
+
+Clone the project from Github
+```bash
+git clone https://github.com/many-pichr/React-Typescript-Exercise.git
+```
+
+Run React project
+```bash
+npm install
+
+npm start
+```
+## Authors
+
+- [@many-pichr](https://github.com/many-pichr)
+
+  
